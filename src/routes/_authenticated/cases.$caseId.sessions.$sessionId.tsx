@@ -74,7 +74,7 @@ function SessionPage() {
       ]);
       if (se) toast.error(se.message);
       if (s) {
-        const row = s as SessionRow;
+        const row = s as unknown as SessionRow;
         setSession(row);
         setTranscript((row.transcript as TranscriptSegment[]) ?? []);
         setBookmarks((row.bookmarks as Bookmark[]) ?? []);
@@ -86,7 +86,7 @@ function SessionPage() {
       setCaseRow((c as CaseRow) ?? null);
       // Try local cache restore (only if cloud has no transcript yet)
       const cached = await loadCache(sessionId);
-      if (cached && (!s || ((s as SessionRow).transcript as TranscriptSegment[]).length === 0)) {
+      if (cached && (!s || ((s as unknown as SessionRow).transcript ?? []).length === 0)) {
         if (cached.transcript.length) setTranscript(cached.transcript as TranscriptSegment[]);
         if (cached.bookmarks.length) setBookmarks(cached.bookmarks as Bookmark[]);
         toast.info("Restored unsaved data from local cache.");
