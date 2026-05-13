@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCasesCaseIdRouteImport } from './routes/_authenticated/cases.$caseId'
+import { Route as AuthenticatedCasesCaseIdSessionsSessionIdRouteImport } from './routes/_authenticated/cases.$caseId.sessions.$sessionId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -40,18 +41,26 @@ const AuthenticatedCasesCaseIdRoute =
     path: '/cases/$caseId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCasesCaseIdSessionsSessionIdRoute =
+  AuthenticatedCasesCaseIdSessionsSessionIdRouteImport.update({
+    id: '/sessions/$sessionId',
+    path: '/sessions/$sessionId',
+    getParentRoute: () => AuthenticatedCasesCaseIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
+  '/cases/$caseId': typeof AuthenticatedCasesCaseIdRouteWithChildren
+  '/cases/$caseId/sessions/$sessionId': typeof AuthenticatedCasesCaseIdSessionsSessionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
+  '/cases/$caseId': typeof AuthenticatedCasesCaseIdRouteWithChildren
+  '/cases/$caseId/sessions/$sessionId': typeof AuthenticatedCasesCaseIdSessionsSessionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,13 +68,24 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
+  '/_authenticated/cases/$caseId': typeof AuthenticatedCasesCaseIdRouteWithChildren
+  '/_authenticated/cases/$caseId/sessions/$sessionId': typeof AuthenticatedCasesCaseIdSessionsSessionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/cases/$caseId'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/cases/$caseId'
+    | '/cases/$caseId/sessions/$sessionId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/cases/$caseId'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/cases/$caseId'
+    | '/cases/$caseId/sessions/$sessionId'
   id:
     | '__root__'
     | '/'
@@ -73,6 +93,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/cases/$caseId'
+    | '/_authenticated/cases/$caseId/sessions/$sessionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,17 +139,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCasesCaseIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cases/$caseId/sessions/$sessionId': {
+      id: '/_authenticated/cases/$caseId/sessions/$sessionId'
+      path: '/sessions/$sessionId'
+      fullPath: '/cases/$caseId/sessions/$sessionId'
+      preLoaderRoute: typeof AuthenticatedCasesCaseIdSessionsSessionIdRouteImport
+      parentRoute: typeof AuthenticatedCasesCaseIdRoute
+    }
   }
 }
 
+interface AuthenticatedCasesCaseIdRouteChildren {
+  AuthenticatedCasesCaseIdSessionsSessionIdRoute: typeof AuthenticatedCasesCaseIdSessionsSessionIdRoute
+}
+
+const AuthenticatedCasesCaseIdRouteChildren: AuthenticatedCasesCaseIdRouteChildren =
+  {
+    AuthenticatedCasesCaseIdSessionsSessionIdRoute:
+      AuthenticatedCasesCaseIdSessionsSessionIdRoute,
+  }
+
+const AuthenticatedCasesCaseIdRouteWithChildren =
+  AuthenticatedCasesCaseIdRoute._addFileChildren(
+    AuthenticatedCasesCaseIdRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedCasesCaseIdRoute: typeof AuthenticatedCasesCaseIdRoute
+  AuthenticatedCasesCaseIdRoute: typeof AuthenticatedCasesCaseIdRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedCasesCaseIdRoute: AuthenticatedCasesCaseIdRoute,
+  AuthenticatedCasesCaseIdRoute: AuthenticatedCasesCaseIdRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
