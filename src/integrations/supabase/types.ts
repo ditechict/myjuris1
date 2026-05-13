@@ -14,7 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cases: {
+        Row: {
+          case_name: string
+          created_at: string
+          defendant: string
+          id: string
+          plaintiff: string
+          status: string
+          suit_number: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          case_name: string
+          created_at?: string
+          defendant: string
+          id?: string
+          plaintiff: string
+          status?: string
+          suit_number: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          case_name?: string
+          created_at?: string
+          defendant?: string
+          id?: string
+          plaintiff?: string
+          status?: string
+          suit_number?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sessions: {
+        Row: {
+          audio_mime: string | null
+          audio_path: string | null
+          bookmarks: Json
+          case_id: string
+          created_at: string
+          duration_seconds: number
+          ended_at: string | null
+          id: string
+          started_at: string
+          title: string
+          transcript: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audio_mime?: string | null
+          audio_path?: string | null
+          bookmarks?: Json
+          case_id: string
+          created_at?: string
+          duration_seconds?: number
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          title?: string
+          transcript?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audio_mime?: string | null
+          audio_path?: string | null
+          bookmarks?: Json
+          case_id?: string
+          created_at?: string
+          duration_seconds?: number
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          title?: string
+          transcript?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
