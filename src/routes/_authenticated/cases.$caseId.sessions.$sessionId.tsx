@@ -151,7 +151,7 @@ function SessionPage() {
           audio_path: path,
           audio_mime: recorder.mimeType,
           duration_seconds: Math.round(durationRef.current),
-          transcript, bookmarks,
+          transcript: transcript as unknown as never, bookmarks: bookmarks as unknown as never,
           ended_at: new Date().toISOString(),
         }).eq("id", sessionId);
         if (updErr) throw updErr;
@@ -175,7 +175,7 @@ function SessionPage() {
   const saveTranscriptOnly = async () => {
     setPersisting(true);
     const { error } = await supabase.from("sessions").update({
-      transcript, bookmarks, duration_seconds: Math.round(durationRef.current),
+      transcript: transcript as unknown as never, bookmarks: bookmarks as unknown as never, duration_seconds: Math.round(durationRef.current),
     }).eq("id", sessionId);
     setPersisting(false);
     if (error) toast.error(error.message);
