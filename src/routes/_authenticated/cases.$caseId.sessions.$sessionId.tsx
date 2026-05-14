@@ -64,7 +64,19 @@ function SessionPage() {
   const [persisting, setPersisting] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [diarizing, setDiarizing] = useState(false);
+  const [permissionDialog, setPermissionDialog] = useState(false);
   const diarize = useServerFn(diarizeSession);
+
+  const isSecure = typeof window !== "undefined" ? window.isSecureContext : true;
+  const browserHint = (() => {
+    if (typeof navigator === "undefined") return "";
+    const ua = navigator.userAgent;
+    if (/Firefox\//.test(ua)) return "firefox";
+    if (/Edg\//.test(ua)) return "edge";
+    if (/Chrome\//.test(ua)) return "chrome";
+    if (/Safari\//.test(ua)) return "safari";
+    return "other";
+  })();
 
   const runDiarization = async () => {
     setDiarizing(true);
@@ -153,6 +165,10 @@ function SessionPage() {
   }, [sessionId, caseId, transcript, bookmarks, recorder.blob, recorder.mimeType]);
 
   const startRec = async () => {
+    if (!isSecure) {
+      toast.error("Microphone requires a secure (HTTPS) context.");
+      return;
+    }
     // Start speech recognition synchronously inside the click gesture
     // (browsers revoke gesture context after the awaited getUserMedia call).
     if (sr.supported) {
@@ -162,7 +178,12 @@ function SessionPage() {
       await recorder.start();
     } catch (e) {
       sr.stop();
-      toast.error(e instanceof Error ? e.message : "Could not start microphone");
+      const msg = e instanceof Error ? e.message : "Could not start microphone";
+      if (/denied|permission/i.test(msg)) {
+        setPermissionDialog(true);
+      } else {
+        toast.error(msg);
+      }
       return;
     }
     if (recorder.error) toast.error(recorder.error);
