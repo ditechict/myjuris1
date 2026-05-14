@@ -124,6 +124,7 @@ export function useRecorder(): RecorderHook {
       setError(msg);
       cleanup();
       setState("idle");
+      throw new Error(msg);
     }
   }, [cleanup, visualize]);
 
