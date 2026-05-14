@@ -181,6 +181,8 @@ function SessionPage() {
         if (signed?.signedUrl) setAudioUrl(signed.signedUrl);
         await clearCache(sessionId);
         toast.success("Session saved");
+        // Kick off real speaker diarization in the background.
+        runDiarization();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Failed to save");
       } finally { setPersisting(false); }
