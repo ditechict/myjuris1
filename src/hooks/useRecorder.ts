@@ -143,7 +143,16 @@ export function useRecorder(): RecorderHook {
       }, 250);
       setState("recording");
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Microphone access denied";
+      const err = e as { name?: string; message?: string };
+      const denied = err?.name === "NotAllowedError" || err?.name === "SecurityError" ||
+        /denied|permission/i.test(err?.message ?? "");
+      const notFound = err?.name === "NotFoundError" || err?.name === "OverconstrainedError";
+      if (denied) setPermission("denied");
+      const msg = denied
+        ? "Microphone permission was denied. Please grant access in your browser to record."
+        : notFound
+        ? "No microphone was found. Connect a microphone and try again."
+        : (err?.message || "Microphone access failed");
       setError(msg);
       cleanup();
       setState("idle");
@@ -208,5 +217,5 @@ export function useRecorder(): RecorderHook {
     setError(null);
   }, [cleanup]);
 
-  return { state, durationSeconds, level, blob, mimeType, error, start, pause, resume, stop, reset };
+  return { state, durationSeconds, level, blob, mimeType, error, permission, deviceLabel, start, pause, resume, stop, reset };
 }
