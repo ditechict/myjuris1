@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ArrowLeft, Mic, Pause, Play, Square, Flag, Loader2,
-  Download, FileText, AlertCircle, CheckCircle2, Save, UserCircle, Sparkles,
+  ArrowLeft, Mic, MicOff, Pause, Play, Square, Flag, Loader2,
+  Download, FileText, AlertCircle, CheckCircle2, Save, UserCircle, Sparkles, ShieldAlert, Activity,
 } from "lucide-react";
 import { diarizeSession } from "@/lib/diarize.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { formatTime, formatDate } from "@/lib/format";
 import { saveCache, loadCache, clearCache } from "@/lib/idb";
@@ -63,7 +64,19 @@ function SessionPage() {
   const [persisting, setPersisting] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [diarizing, setDiarizing] = useState(false);
+  const [permissionDialog, setPermissionDialog] = useState(false);
   const diarize = useServerFn(diarizeSession);
+
+  const isSecure = typeof window !== "undefined" ? window.isSecureContext : true;
+  const browserHint = (() => {
+    if (typeof navigator === "undefined") return "";
+    const ua = navigator.userAgent;
+    if (/Firefox\//.test(ua)) return "firefox";
+    if (/Edg\//.test(ua)) return "edge";
+    if (/Chrome\//.test(ua)) return "chrome";
+    if (/Safari\//.test(ua)) return "safari";
+    return "other";
+  })();
 
   const runDiarization = async () => {
     setDiarizing(true);
@@ -152,6 +165,10 @@ function SessionPage() {
   }, [sessionId, caseId, transcript, bookmarks, recorder.blob, recorder.mimeType]);
 
   const startRec = async () => {
+    if (!isSecure) {
+      toast.error("Microphone requires a secure (HTTPS) context.");
+      return;
+    }
     // Start speech recognition synchronously inside the click gesture
     // (browsers revoke gesture context after the awaited getUserMedia call).
     if (sr.supported) {
@@ -161,7 +178,12 @@ function SessionPage() {
       await recorder.start();
     } catch (e) {
       sr.stop();
-      toast.error(e instanceof Error ? e.message : "Could not start microphone");
+      const msg = e instanceof Error ? e.message : "Could not start microphone";
+      if (/denied|permission/i.test(msg)) {
+        setPermissionDialog(true);
+      } else {
+        toast.error(msg);
+      }
       return;
     }
     if (recorder.error) toast.error(recorder.error);
@@ -316,6 +338,70 @@ function SessionPage() {
             )}
           </Card>
 
+          {/* Diagnostics */}
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Activity className="size-4 text-muted-foreground" />
+              <h3 className="text-sm font-medium">Diagnostics</h3>
+              <Badge variant="outline" className="text-[10px] ml-auto">Live</Badge>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
+              <DiagRow label="Secure context (HTTPS)" ok={isSecure} value={isSecure ? "yes" : "no — required"} />
+              <DiagRow
+                label="Microphone permission"
+                ok={recorder.permission === "granted"}
+                warn={recorder.permission === "prompt" || recorder.permission === "unknown"}
+                value={recorder.permission}
+              />
+              <DiagRow
+                label="Recorder state"
+                ok={isRecording}
+                warn={isPaused}
+                value={recordingState}
+              />
+              <DiagRow
+                label="Input device"
+                ok={!!recorder.deviceLabel}
+                value={recorder.deviceLabel ?? "not opened"}
+              />
+              <DiagRow
+                label="Audio level"
+                ok={recorder.level > 0.02}
+                warn={isRecording && recorder.level <= 0.02}
+                value={`${Math.round(recorder.level * 100)}%`}
+              />
+              <DiagRow
+                label="Encoder MIME"
+                ok={!!recorder.mimeType}
+                value={recorder.mimeType ?? "—"}
+              />
+              <DiagRow
+                label="Speech recognition supported"
+                ok={sr.supported}
+                value={sr.supported ? "yes" : "no (use Chrome/Edge)"}
+              />
+              <DiagRow
+                label="Speech recognition state"
+                ok={sr.active}
+                warn={!sr.active && isRecording && sr.supported}
+                value={sr.active ? "listening" : "stopped"}
+              />
+              {sr.error && (
+                <div className="sm:col-span-2 flex items-start gap-2 text-destructive">
+                  <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
+                  <span>Speech recognition error: {sr.error}</span>
+                </div>
+              )}
+              {recorder.permission === "denied" && (
+                <div className="sm:col-span-2">
+                  <Button size="sm" variant="outline" onClick={() => setPermissionDialog(true)}>
+                    <ShieldAlert className="size-4" /> How to grant microphone access
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+
           {/* Speaker + bookmark controls */}
           <Card className="p-4">
             <div className="grid sm:grid-cols-[1fr_2fr_auto] gap-3 items-end">
@@ -428,6 +514,87 @@ function SessionPage() {
           </Card>
         </div>
       </div>
+
+      <PermissionDialog
+        open={permissionDialog}
+        onOpenChange={setPermissionDialog}
+        browser={browserHint}
+        onRetry={() => { setPermissionDialog(false); startRec(); }}
+      />
     </div>
+  );
+}
+
+function DiagRow({ label, value, ok, warn }: { label: string; value: string; ok?: boolean; warn?: boolean }) {
+  const dot = ok ? "bg-success" : warn ? "bg-warning" : "bg-muted-foreground/40";
+  return (
+    <div className="flex items-center justify-between gap-3 min-w-0">
+      <span className="text-muted-foreground truncate">{label}</span>
+      <span className="flex items-center gap-1.5 font-mono tabular-nums truncate">
+        <span className={`size-1.5 rounded-full ${dot}`} />
+        <span className="truncate">{value}</span>
+      </span>
+    </div>
+  );
+}
+
+function PermissionDialog({
+  open, onOpenChange, browser, onRetry,
+}: { open: boolean; onOpenChange: (v: boolean) => void; browser: string; onRetry: () => void }) {
+  const steps: Record<string, string[]> = {
+    chrome: [
+      "Click the tune/lock icon at the left of the address bar.",
+      "Find Microphone and switch it to Allow.",
+      "Reload the page, then press Record again.",
+    ],
+    edge: [
+      "Click the lock icon at the left of the address bar.",
+      "Set Microphone to Allow.",
+      "Reload the page and press Record.",
+    ],
+    firefox: [
+      "Click the lock icon at the left of the address bar.",
+      "Open Connection settings → Permissions and remove the 'Block' for Microphone.",
+      "Reload the page and press Record.",
+    ],
+    safari: [
+      "Open Safari → Settings → Websites → Microphone.",
+      "Set this site to Allow.",
+      "Reload the page and press Record.",
+    ],
+    other: [
+      "Open the site permissions in your browser address bar.",
+      "Allow microphone access for this site.",
+      "Reload and try again.",
+    ],
+  };
+  const list = steps[browser] ?? steps.other;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <MicOff className="size-5 text-destructive" /> Microphone access required
+          </DialogTitle>
+          <DialogDescription>
+            myJuris needs microphone access to record audio and generate a transcript.
+            Your browser has blocked or denied the request.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="text-sm">
+          <p className="font-medium mb-2">To grant access:</p>
+          <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
+            {list.map((s, i) => <li key={i}>{s}</li>)}
+          </ol>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Recording requires a secure (HTTPS) page. Make sure no other app is currently using the microphone.
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+          <Button onClick={onRetry}><Mic className="size-4" /> Try again</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
