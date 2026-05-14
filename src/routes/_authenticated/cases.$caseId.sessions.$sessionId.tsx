@@ -514,6 +514,87 @@ function SessionPage() {
           </Card>
         </div>
       </div>
+
+      <PermissionDialog
+        open={permissionDialog}
+        onOpenChange={setPermissionDialog}
+        browser={browserHint}
+        onRetry={() => { setPermissionDialog(false); startRec(); }}
+      />
     </div>
+  );
+}
+
+function DiagRow({ label, value, ok, warn }: { label: string; value: string; ok?: boolean; warn?: boolean }) {
+  const dot = ok ? "bg-success" : warn ? "bg-warning" : "bg-muted-foreground/40";
+  return (
+    <div className="flex items-center justify-between gap-3 min-w-0">
+      <span className="text-muted-foreground truncate">{label}</span>
+      <span className="flex items-center gap-1.5 font-mono tabular-nums truncate">
+        <span className={`size-1.5 rounded-full ${dot}`} />
+        <span className="truncate">{value}</span>
+      </span>
+    </div>
+  );
+}
+
+function PermissionDialog({
+  open, onOpenChange, browser, onRetry,
+}: { open: boolean; onOpenChange: (v: boolean) => void; browser: string; onRetry: () => void }) {
+  const steps: Record<string, string[]> = {
+    chrome: [
+      "Click the tune/lock icon at the left of the address bar.",
+      "Find Microphone and switch it to Allow.",
+      "Reload the page, then press Record again.",
+    ],
+    edge: [
+      "Click the lock icon at the left of the address bar.",
+      "Set Microphone to Allow.",
+      "Reload the page and press Record.",
+    ],
+    firefox: [
+      "Click the lock icon at the left of the address bar.",
+      "Open Connection settings → Permissions and remove the 'Block' for Microphone.",
+      "Reload the page and press Record.",
+    ],
+    safari: [
+      "Open Safari → Settings → Websites → Microphone.",
+      "Set this site to Allow.",
+      "Reload the page and press Record.",
+    ],
+    other: [
+      "Open the site permissions in your browser address bar.",
+      "Allow microphone access for this site.",
+      "Reload and try again.",
+    ],
+  };
+  const list = steps[browser] ?? steps.other;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <MicOff className="size-5 text-destructive" /> Microphone access required
+          </DialogTitle>
+          <DialogDescription>
+            myJuris needs microphone access to record audio and generate a transcript.
+            Your browser has blocked or denied the request.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="text-sm">
+          <p className="font-medium mb-2">To grant access:</p>
+          <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
+            {list.map((s, i) => <li key={i}>{s}</li>)}
+          </ol>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Recording requires a secure (HTTPS) page. Make sure no other app is currently using the microphone.
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+          <Button onClick={onRetry}><Mic className="size-4" /> Try again</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
