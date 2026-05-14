@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
 export type RecorderState = "idle" | "recording" | "paused" | "stopped";
+export type MicPermission = "unknown" | "prompt" | "granted" | "denied";
 
 export interface RecorderHook {
   state: RecorderState;
@@ -9,6 +10,8 @@ export interface RecorderHook {
   blob: Blob | null;
   mimeType: string | null;
   error: string | null;
+  permission: MicPermission;
+  deviceLabel: string | null;
   start: () => Promise<void>;
   pause: () => void;
   resume: () => void;
