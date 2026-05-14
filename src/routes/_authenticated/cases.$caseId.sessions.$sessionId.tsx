@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft, Mic, Pause, Play, Square, Flag, Loader2,
-  Download, FileText, AlertCircle, CheckCircle2, Save, UserCircle,
+  Download, FileText, AlertCircle, CheckCircle2, Save, UserCircle, Sparkles,
 } from "lucide-react";
+import { diarizeSession } from "@/lib/diarize.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useRecorder } from "@/hooks/useRecorder";
