@@ -331,6 +331,9 @@ function SessionPage() {
               </div>
               <div className="flex items-center gap-2">
                 {savedAt && <span className="text-[11px] text-muted-foreground hidden sm:inline">Local cache · {new Date(savedAt).toLocaleTimeString()}</span>}
+                <Button size="sm" variant="ghost" onClick={runDiarization} disabled={diarizing || recordingState === "recording" || recordingState === "paused"} title="Run AI speaker diarization on the recorded audio">
+                  {diarizing ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />} Diarize
+                </Button>
                 <Button size="sm" variant="ghost" onClick={saveTranscriptOnly} disabled={persisting}><Save className="size-4" /> Save</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
