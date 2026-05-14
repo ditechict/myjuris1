@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ArrowLeft, Mic, Pause, Play, Square, Flag, Loader2,
-  Download, FileText, AlertCircle, CheckCircle2, Save, UserCircle, Sparkles,
+  ArrowLeft, Mic, MicOff, Pause, Play, Square, Flag, Loader2,
+  Download, FileText, AlertCircle, CheckCircle2, Save, UserCircle, Sparkles, ShieldAlert, Activity,
 } from "lucide-react";
 import { diarizeSession } from "@/lib/diarize.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { formatTime, formatDate } from "@/lib/format";
 import { saveCache, loadCache, clearCache } from "@/lib/idb";
