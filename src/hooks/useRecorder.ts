@@ -107,6 +107,9 @@ export function useRecorder(): RecorderHook {
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
+      setPermission("granted");
+      const track = stream.getAudioTracks()[0];
+      setDeviceLabel(track?.label || "Default microphone");
 
       const mime = pickMime();
       const rec = new MediaRecorder(stream, { mimeType: mime });
