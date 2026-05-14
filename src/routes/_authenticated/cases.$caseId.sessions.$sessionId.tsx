@@ -152,11 +152,27 @@ function SessionPage() {
   }, [sessionId, caseId, transcript, bookmarks, recorder.blob, recorder.mimeType]);
 
   const startRec = async () => {
-    await recorder.start();
-    if (sr.supported) sr.start(() => durationRef.current * 1000);
+    // Start speech recognition synchronously inside the click gesture
+    // (browsers revoke gesture context after the awaited getUserMedia call).
+    if (sr.supported) {
+      try { sr.start(() => durationRef.current * 1000); } catch { /* surfaced via sr.error */ }
+    }
+    try {
+      await recorder.start();
+    } catch (e) {
+      sr.stop();
+      toast.error(e instanceof Error ? e.message : "Could not start microphone");
+      return;
+    }
+    if (recorder.error) toast.error(recorder.error);
   };
   const pauseRec = () => { recorder.pause(); sr.stop(); };
-  const resumeRec = () => { recorder.resume(); if (sr.supported) sr.start(() => durationRef.current * 1000); };
+  const resumeRec = () => {
+    if (sr.supported) {
+      try { sr.start(() => durationRef.current * 1000); } catch { /* ignore */ }
+    }
+    recorder.resume();
+  };
   const stopRec = async () => {
     sr.stop();
     const blob = await recorder.stop();
