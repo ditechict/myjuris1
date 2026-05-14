@@ -338,6 +338,70 @@ function SessionPage() {
             )}
           </Card>
 
+          {/* Diagnostics */}
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Activity className="size-4 text-muted-foreground" />
+              <h3 className="text-sm font-medium">Diagnostics</h3>
+              <Badge variant="outline" className="text-[10px] ml-auto">Live</Badge>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
+              <DiagRow label="Secure context (HTTPS)" ok={isSecure} value={isSecure ? "yes" : "no — required"} />
+              <DiagRow
+                label="Microphone permission"
+                ok={recorder.permission === "granted"}
+                warn={recorder.permission === "prompt" || recorder.permission === "unknown"}
+                value={recorder.permission}
+              />
+              <DiagRow
+                label="Recorder state"
+                ok={isRecording}
+                warn={isPaused}
+                value={recordingState}
+              />
+              <DiagRow
+                label="Input device"
+                ok={!!recorder.deviceLabel}
+                value={recorder.deviceLabel ?? "not opened"}
+              />
+              <DiagRow
+                label="Audio level"
+                ok={recorder.level > 0.02}
+                warn={isRecording && recorder.level <= 0.02}
+                value={`${Math.round(recorder.level * 100)}%`}
+              />
+              <DiagRow
+                label="Encoder MIME"
+                ok={!!recorder.mimeType}
+                value={recorder.mimeType ?? "—"}
+              />
+              <DiagRow
+                label="Speech recognition supported"
+                ok={sr.supported}
+                value={sr.supported ? "yes" : "no (use Chrome/Edge)"}
+              />
+              <DiagRow
+                label="Speech recognition state"
+                ok={sr.active}
+                warn={!sr.active && isRecording && sr.supported}
+                value={sr.active ? "listening" : "stopped"}
+              />
+              {sr.error && (
+                <div className="sm:col-span-2 flex items-start gap-2 text-destructive">
+                  <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
+                  <span>Speech recognition error: {sr.error}</span>
+                </div>
+              )}
+              {recorder.permission === "denied" && (
+                <div className="sm:col-span-2">
+                  <Button size="sm" variant="outline" onClick={() => setPermissionDialog(true)}>
+                    <ShieldAlert className="size-4" /> How to grant microphone access
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+
           {/* Speaker + bookmark controls */}
           <Card className="p-4">
             <div className="grid sm:grid-cols-[1fr_2fr_auto] gap-3 items-end">
