@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
-  head: () => ({ meta: [{ title: "Sign in — Lex Recorder" }] }),
+  head: () => ({ meta: [{ title: "Sign in — myJuris" }] }),
 });
 
 function AuthPage() {
@@ -56,7 +56,7 @@ function AuthPage() {
           <div className="size-10 rounded-md bg-background/15 grid place-items-center backdrop-blur">
             <Scale className="size-6" />
           </div>
-          <div className="font-semibold text-lg tracking-tight">Lex Recorder</div>
+          <div className="font-semibold text-lg tracking-tight">myJuris</div>
         </div>
         <div className="space-y-6 max-w-md relative z-10">
           <h1 className="text-4xl font-semibold tracking-tight leading-tight">Court of record, in your browser.</h1>
@@ -67,7 +67,7 @@ function AuthPage() {
             <li className="flex gap-3"><ShieldCheck className="size-5 mt-0.5 shrink-0" /><span>Private to your account; auto‑saved locally and to the cloud.</span></li>
           </ul>
         </div>
-        <div className="text-xs text-primary-foreground/60">© Lex Recorder · Secure legal technology</div>
+        <div className="text-xs text-primary-foreground/60">© myJuris · Secure legal technology</div>
         <div className="absolute -right-32 -bottom-32 size-[420px] rounded-full bg-background/10 blur-3xl" />
       </div>
       {/* Form */}

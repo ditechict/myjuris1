@@ -16,7 +16,7 @@ import type { CaseStatus } from "@/lib/types";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
-  head: () => ({ meta: [{ title: "Case Directory — Lex Recorder" }] }),
+  head: () => ({ meta: [{ title: "Case Directory — myJuris" }] }),
 });
 
 interface CaseRow {

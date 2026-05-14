@@ -16,7 +16,7 @@ export function AppShell() {
               <Scale className="size-5 text-primary-foreground" strokeWidth={2.25} />
             </div>
             <div className="leading-tight">
-              <div className="font-semibold tracking-tight">Lex Recorder</div>
+              <div className="font-semibold tracking-tight">myJuris</div>
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Court Audio &amp; Transcript</div>
             </div>
           </Link>
