@@ -54,11 +54,16 @@ export function useSpeechRecognition(): LiveTranscriptHook {
   const offsetFnRef = useRef<() => number>(() => 0);
   const wantActiveRef = useRef(false);
 
-  useEffect(() => { setSupported(getSR() !== null); }, []);
+  useEffect(() => {
+    setSupported(getSR() !== null);
+  }, []);
 
   const start = useCallback((offsetMs: () => number) => {
     const SR = getSR();
-    if (!SR) { setError("Live transcription not supported in this browser. Try Chrome."); return; }
+    if (!SR) {
+      setError("Live transcription not supported in this browser. Try Chrome.");
+      return;
+    }
     offsetFnRef.current = offsetMs;
     wantActiveRef.current = true;
     const rec = new SR();
@@ -84,22 +89,40 @@ export function useSpeechRecognition(): LiveTranscriptHook {
     rec.onend = () => {
       // Auto-restart if user still wants it active (browsers stop ~60s)
       if (wantActiveRef.current) {
-        try { rec.start(); } catch { setActive(false); }
+        try {
+          rec.start();
+        } catch {
+          setActive(false);
+        }
       } else {
         setActive(false);
       }
     };
-    try { rec.start(); recRef.current = rec; setActive(true); setError(null); }
-    catch (e) { setError(e instanceof Error ? e.message : "Could not start recognizer"); }
+    try {
+      rec.start();
+      recRef.current = rec;
+      setActive(true);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start recognizer");
+    }
   }, []);
 
   const stop = useCallback(() => {
     wantActiveRef.current = false;
-    try { recRef.current?.stop(); } catch { /* ignore */ }
+    try {
+      recRef.current?.stop();
+    } catch {
+      /* ignore */
+    }
     setActive(false);
   }, []);
 
-  const reset = useCallback(() => { setInterim(""); setFinals([]); setError(null); }, []);
+  const reset = useCallback(() => {
+    setInterim("");
+    setFinals([]);
+    setError(null);
+  }, []);
 
   return { supported, active, interim, finals, error, start, stop, reset };
 }

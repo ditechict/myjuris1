@@ -18,7 +18,12 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <p className="mt-4 text-sm text-muted-foreground">This page does not exist.</p>
-        <Link to="/" className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90">Go home</Link>
+        <Link
+          to="/"
+          className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+        >
+          Go home
+        </Link>
       </div>
     </div>
   );
@@ -30,9 +35,19 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Something went wrong</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          Something went wrong
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
-        <button onClick={() => { router.invalidate(); reset(); }} className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90">Try again</button>
+        <button
+          onClick={() => {
+            router.invalidate();
+            reset();
+          }}
+          className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+        >
+          Try again
+        </button>
       </div>
     </div>
   );
@@ -44,14 +59,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "myJuris — Courtroom Audio & Live Transcription" },
-      { name: "description", content: "Secure courtroom audio recording with live transcription, bookmarking and case management." },
+      {
+        name: "description",
+        content:
+          "Secure courtroom audio recording with live transcription, bookmarking and case management.",
+      },
       { property: "og:title", content: "myJuris — Courtroom Audio & Live Transcription" },
-      { property: "og:description", content: "Secure courtroom audio recording with live transcription, bookmarking and case management." },
+      {
+        property: "og:description",
+        content:
+          "Secure courtroom audio recording with live transcription, bookmarking and case management.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "myJuris — Courtroom Audio & Live Transcription" },
-      { name: "twitter:description", content: "Secure courtroom audio recording with live transcription, bookmarking and case management." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8d4f139a-9433-4322-9ecc-4933149ea538" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8d4f139a-9433-4322-9ecc-4933149ea538" },
+      {
+        name: "twitter:description",
+        content:
+          "Secure courtroom audio recording with live transcription, bookmarking and case management.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8d4f139a-9433-4322-9ecc-4933149ea538",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8d4f139a-9433-4322-9ecc-4933149ea538",
+      },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
@@ -65,8 +100,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
     </html>
   );
 }

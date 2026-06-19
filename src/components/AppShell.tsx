@@ -17,17 +17,30 @@ export function AppShell() {
             </div>
             <div className="leading-tight">
               <div className="font-semibold tracking-tight">myJuris</div>
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Court Audio &amp; Transcript</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Court Audio &amp; Transcript
+              </div>
             </div>
           </Link>
           <nav className="hidden sm:flex items-center gap-1">
             <Button asChild variant="ghost" size="sm">
-              <Link to="/dashboard"><LayoutDashboard className="size-4" /> Dashboard</Link>
+              <Link to="/dashboard">
+                <LayoutDashboard className="size-4" /> Dashboard
+              </Link>
             </Button>
           </nav>
           <div className="flex items-center gap-3">
-            <span className="hidden md:inline text-xs text-muted-foreground truncate max-w-[200px]">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={async () => { await signOut(); navigate({ to: "/auth" }); }}>
+            <span className="hidden md:inline text-xs text-muted-foreground truncate max-w-[200px]">
+              {user?.email}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                await signOut();
+                navigate({ to: "/auth" });
+              }}
+            >
               <LogOut className="size-4" /> Sign out
             </Button>
           </div>

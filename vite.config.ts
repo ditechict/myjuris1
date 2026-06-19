@@ -10,13 +10,13 @@ export default defineConfig({
   optimizeDeps: {
     disabled: true,
     exclude: [
-      '@tanstack/react-start',
-      '@tanstack/react-router',
-      '@tanstack/react-router-devtools',
-      '@tanstack/start-server-core',
-      '@tanstack/start-plugin-core',
-      '@tanstack/start-manifest',
-      '@tanstack/start-static-server-functions',
+      "@tanstack/react-start",
+      "@tanstack/react-router",
+      "@tanstack/react-router-devtools",
+      "@tanstack/start-server-core",
+      "@tanstack/start-plugin-core",
+      "@tanstack/start-manifest",
+      "@tanstack/start-static-server-functions",
     ],
   },
 });

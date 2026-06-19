@@ -22,7 +22,8 @@ export function Waveform({ level, active, className }: Props) {
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
-        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
@@ -33,7 +34,9 @@ export function Waveform({ level, active, className }: Props) {
       while (hist.length > barCount) hist.shift();
 
       const cssVar = (name: string) => getComputedStyle(canvas).getPropertyValue(name).trim();
-      const primaryColor = active ? cssVar("--color-primary") || "#3b82f6" : cssVar("--color-muted-foreground") || "#888";
+      const primaryColor = active
+        ? cssVar("--color-primary") || "#3b82f6"
+        : cssVar("--color-muted-foreground") || "#888";
       ctx.fillStyle = primaryColor;
       const cx = w / 2;
       const cy = h / 2;
@@ -47,7 +50,10 @@ export function Waveform({ level, active, className }: Props) {
       // center line
       ctx.strokeStyle = cssVar("--color-border") || "#333";
       ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, cy);
+      ctx.lineTo(w, cy);
+      ctx.stroke();
 
       // recording dot
       if (active) {
@@ -61,8 +67,15 @@ export function Waveform({ level, active, className }: Props) {
       rafRef.current = requestAnimationFrame(draw);
     };
     rafRef.current = requestAnimationFrame(draw);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [level, active]);
 
-  return <canvas ref={canvasRef} className={className ?? "w-full h-24 rounded-md bg-muted/40 border border-border"} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className={className ?? "w-full h-24 rounded-md bg-muted/40 border border-border"}
+    />
+  );
 }

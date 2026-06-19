@@ -23,7 +23,11 @@ function pickMime(): string {
   if (typeof MediaRecorder === "undefined") return "audio/webm";
   const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"];
   for (const c of candidates) {
-    try { if (MediaRecorder.isTypeSupported(c)) return c; } catch { /* ignore */ }
+    try {
+      if (MediaRecorder.isTypeSupported(c)) return c;
+    } catch {
+      /* ignore */
+    }
   }
   return "audio/webm";
 }
@@ -48,9 +52,13 @@ export function useRecorder(): RecorderHook {
         if (cancelled) return;
         setPermission(status.state as MicPermission);
         status.onchange = () => setPermission(status.state as MicPermission);
-      } catch { /* not supported (e.g. Firefox) */ }
+      } catch {
+        /* not supported (e.g. Firefox) */
+      }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const mediaRef = useRef<MediaRecorder | null>(null);
@@ -125,7 +133,9 @@ export function useRecorder(): RecorderHook {
       };
 
       // Setup analyser
-      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       const ctx = new Ctx();
       audioCtxRef.current = ctx;
       const src = ctx.createMediaStreamSource(stream);
@@ -144,15 +154,17 @@ export function useRecorder(): RecorderHook {
       setState("recording");
     } catch (e) {
       const err = e as { name?: string; message?: string };
-      const denied = err?.name === "NotAllowedError" || err?.name === "SecurityError" ||
+      const denied =
+        err?.name === "NotAllowedError" ||
+        err?.name === "SecurityError" ||
         /denied|permission/i.test(err?.message ?? "");
       const notFound = err?.name === "NotFoundError" || err?.name === "OverconstrainedError";
       if (denied) setPermission("denied");
       const msg = denied
         ? "Microphone permission was denied. Please grant access in your browser to record."
         : notFound
-        ? "No microphone was found. Connect a microphone and try again."
-        : (err?.message || "Microphone access failed");
+          ? "No microphone was found. Connect a microphone and try again."
+          : err?.message || "Microphone access failed";
       setError(msg);
       cleanup();
       setState("idle");
@@ -217,5 +229,19 @@ export function useRecorder(): RecorderHook {
     setError(null);
   }, [cleanup]);
 
-  return { state, durationSeconds, level, blob, mimeType, error, permission, deviceLabel, start, pause, resume, stop, reset };
+  return {
+    state,
+    durationSeconds,
+    level,
+    blob,
+    mimeType,
+    error,
+    permission,
+    deviceLabel,
+    start,
+    pause,
+    resume,
+    stop,
+    reset,
+  };
 }

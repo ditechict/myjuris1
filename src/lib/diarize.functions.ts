@@ -37,9 +37,7 @@ async function aaFetch(path: string, init: RequestInit, key: string) {
 
 export const diarizeSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    z.object({ sessionId: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input) => z.object({ sessionId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const apiKey = process.env.ASSEMBLYAI_API_KEY;
     if (!apiKey) {
@@ -94,7 +92,11 @@ export const diarizeSession = createServerFn({ method: "POST" })
           return { ok: false as const, error: "Transcription timed out after 10 minutes." };
         }
         await new Promise((r) => setTimeout(r, 3000));
-        result = (await aaFetch(`/transcript/${submitted.id}`, { method: "GET" }, apiKey)) as AATranscript;
+        result = (await aaFetch(
+          `/transcript/${submitted.id}`,
+          { method: "GET" },
+          apiKey,
+        )) as AATranscript;
       }
 
       if (result.status === "error") {

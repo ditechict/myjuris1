@@ -32,7 +32,8 @@ function AuthPage() {
     try {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
-          email, password,
+          email,
+          password,
           options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
@@ -45,7 +46,9 @@ function AuthPage() {
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Authentication failed");
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -59,32 +62,67 @@ function AuthPage() {
           <div className="font-semibold text-lg tracking-tight">myJuris</div>
         </div>
         <div className="space-y-6 max-w-md relative z-10">
-          <h1 className="text-4xl font-semibold tracking-tight leading-tight">Court of record, in your browser.</h1>
-          <p className="text-primary-foreground/80 text-sm leading-relaxed">Record proceedings, capture live transcripts, and flag pivotal moments. Built for clerks, counsel, and the bench.</p>
+          <h1 className="text-4xl font-semibold tracking-tight leading-tight">
+            Court of record, in your browser.
+          </h1>
+          <p className="text-primary-foreground/80 text-sm leading-relaxed">
+            Record proceedings, capture live transcripts, and flag pivotal moments. Built for
+            clerks, counsel, and the bench.
+          </p>
           <ul className="space-y-3 text-sm">
-            <li className="flex gap-3"><Mic className="size-5 mt-0.5 shrink-0" /><span>High‑fidelity audio capture with pause &amp; resume.</span></li>
-            <li className="flex gap-3"><FileText className="size-5 mt-0.5 shrink-0" /><span>Live speech‑to‑text with timestamped segments.</span></li>
-            <li className="flex gap-3"><ShieldCheck className="size-5 mt-0.5 shrink-0" /><span>Private to your account; auto‑saved locally and to the cloud.</span></li>
+            <li className="flex gap-3">
+              <Mic className="size-5 mt-0.5 shrink-0" />
+              <span>High‑fidelity audio capture with pause &amp; resume.</span>
+            </li>
+            <li className="flex gap-3">
+              <FileText className="size-5 mt-0.5 shrink-0" />
+              <span>Live speech‑to‑text with timestamped segments.</span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="size-5 mt-0.5 shrink-0" />
+              <span>Private to your account; auto‑saved locally and to the cloud.</span>
+            </li>
           </ul>
         </div>
-        <div className="text-xs text-primary-foreground/60">© myJuris · Secure legal technology</div>
+        <div className="text-xs text-primary-foreground/60">
+          © myJuris · Secure legal technology
+        </div>
         <div className="absolute -right-32 -bottom-32 size-[420px] rounded-full bg-background/10 blur-3xl" />
       </div>
       {/* Form */}
       <div className="flex items-center justify-center p-6 sm:p-12">
         <Card className="w-full max-w-md p-8 shadow-elevated">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold tracking-tight">{mode === "signin" ? "Sign in" : "Create your account"}</h2>
-            <p className="text-sm text-muted-foreground mt-1">{mode === "signin" ? "Access your case archive." : "Begin recording in minutes."}</p>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              {mode === "signin" ? "Sign in" : "Create your account"}
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {mode === "signin" ? "Access your case archive." : "Begin recording in minutes."}
+            </p>
           </div>
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="clerk@court.gov" />
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="clerk@court.gov"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+              <Input
+                id="password"
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
             </div>
             <Button type="submit" disabled={busy} className="w-full">
               {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
@@ -92,9 +130,27 @@ function AuthPage() {
           </form>
           <div className="mt-6 text-sm text-muted-foreground text-center">
             {mode === "signin" ? (
-              <>New here? <button type="button" className="text-primary hover:underline" onClick={() => setMode("signup")}>Create an account</button></>
+              <>
+                New here?{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => setMode("signup")}
+                >
+                  Create an account
+                </button>
+              </>
             ) : (
-              <>Already registered? <button type="button" className="text-primary hover:underline" onClick={() => setMode("signin")}>Sign in</button></>
+              <>
+                Already registered?{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => setMode("signin")}
+                >
+                  Sign in
+                </button>
+              </>
             )}
           </div>
         </Card>

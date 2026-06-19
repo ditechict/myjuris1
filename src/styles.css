@@ -93,19 +93,36 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html, body { background-color: var(--color-background); color: var(--color-foreground); }
-  body { font-feature-settings: "ss01", "cv11"; }
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+  body {
+    font-feature-settings: "ss01", "cv11";
+  }
 }
 
 @layer utilities {
-  .bg-gradient-brand { background-image: var(--gradient-brand); }
-  .shadow-elevated { box-shadow: var(--shadow-elevated); }
+  .bg-gradient-brand {
+    background-image: var(--gradient-brand);
+  }
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
   .recording-pulse {
     animation: recording-pulse 1.4s ease-in-out infinite;
   }
   @keyframes recording-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 oklch(0.6 0.21 25 / 0.6); }
-    50% { box-shadow: 0 0 0 12px oklch(0.6 0.21 25 / 0); }
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 oklch(0.6 0.21 25 / 0.6);
+    }
+    50% {
+      box-shadow: 0 0 0 12px oklch(0.6 0.21 25 / 0);
+    }
   }
 }
