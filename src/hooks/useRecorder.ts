@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { pickMime } from "./recorder-utils";
 
 export type RecorderState = "idle" | "recording" | "paused" | "stopped";
 export type MicPermission = "unknown" | "prompt" | "granted" | "denied";
@@ -17,19 +18,6 @@ export interface RecorderHook {
   resume: () => void;
   stop: () => Promise<Blob | null>;
   reset: () => void;
-}
-
-function pickMime(): string {
-  if (typeof MediaRecorder === "undefined") return "audio/webm";
-  const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"];
-  for (const c of candidates) {
-    try {
-      if (MediaRecorder.isTypeSupported(c)) return c;
-    } catch {
-      /* ignore */
-    }
-  }
-  return "audio/webm";
 }
 
 export function useRecorder(): RecorderHook {
