@@ -1,37 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-
-interface SpeechRecognitionEventLike {
-  resultIndex: number;
-  results: ArrayLike<{
-    isFinal: boolean;
-    0: { transcript: string; confidence: number };
-  }>;
-}
-
-interface SpeechRecognitionLike {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: ((e: SpeechRecognitionEventLike) => void) | null;
-  onend: (() => void) | null;
-  onerror: ((e: { error: string }) => void) | null;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-}
-
-interface SpeechRecognitionCtor {
-  new (): SpeechRecognitionLike;
-}
-
-function getSR(): SpeechRecognitionCtor | null {
-  if (typeof window === "undefined") return null;
-  const w = window as unknown as {
-    SpeechRecognition?: SpeechRecognitionCtor;
-    webkitSpeechRecognition?: SpeechRecognitionCtor;
-  };
-  return w.SpeechRecognition || w.webkitSpeechRecognition || null;
-}
+import {
+  getSR,
+  type SpeechRecognitionEventLike,
+  type SpeechRecognitionLike,
+} from "./speech-recognition-utils";
 
 export interface LiveTranscriptHook {
   supported: boolean;
