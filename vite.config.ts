@@ -8,7 +8,6 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 export default defineConfig({
   plugins: [tanstackStart(), react(), tsconfigPaths(), tailwindcss(), cloudflare()],
   optimizeDeps: {
-    disabled: true,
     exclude: [
       "@tanstack/react-start",
       "@tanstack/react-router",
